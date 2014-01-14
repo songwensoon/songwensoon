@@ -1,0 +1,41 @@
+/**
+      * 多线程调用接口
+      **/
+     public function muiltVmStatusAction()
+     {
+     		$userId = Mage::getSingleton( 'customer/session' )->getCustomer()->getId();
+     		$instanceId_s = $this->getRequest()->getParam('instanceIds');
+     		$instanceIds = explode(",",$instanceId_s);
+     		if(empty($instanceIds)) return;
+     		$mh = curl_multi_init();//初始化
+			$urls = array();
+     		foreach($instanceIds as $i=>$instanceId)
+     		{
+     				$url = Mage::getBaseUrl()."customer/cloudconsole/getInstanceState/userId/".$userId."/instanceId/".$instanceId;
+     				$urls[$i] = $url;
+     				$conn[$i]=curl_init($url);
+     				curl_setopt($conn[$i],CURLOPT_RETURNTRANSFER,1);
+      			curl_multi_add_handle ($mh,$conn[$i]);
+     	  	}
+     	    do{
+    	  		$mrc = curl_multi_exec($mh,$active);
+		   	}while ($mrc == CURLM_CALL_MULTI_PERFORM);
+			while ($active and $mrc == CURLM_OK) 
+			{
+		        if (curl_multi_select($mh) != -1)
+		         {
+	                do {
+	                        $mrc = curl_multi_exec($mh, $active);
+	                   } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+		         }
+			}
+			foreach ($urls as $i => $url) 
+			{
+			      $res[$i]=curl_multi_getcontent($conn[$i]);
+			      curl_close($conn[$i]);
+			      curl_multi_remove_handle($mh,$conn[$i]);   //释放资源
+			      
+			}
+			curl_multi_close($mh);
+
+     }
