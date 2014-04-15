@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * Description of StickyNotesController
+ *
+ * @author Arian Khosravi <arian@bigemployee.com>, <@ArianKhosravi>
+ */
+// module/Admin/src/StickyNotes/Controller/IndexController.php:
+
+namespace Admin\Controller;
+
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
+use Zend\Session\Container;
+use Admin\Helpers\Captcha;
+use Admin\Message\Message;
+class IndexController extends AbstractActionController {
+	protected $_adminNavigationsTable;
+
+    public function indexAction() {
+		$config = $this->getServiceLocator()->get('config');
+		$db = $config['db'];
+		$data = $this->getAdminNavigationsTable()->getAdminMenu();
+		$view = new ViewModel(array('menu'=>$data['menu'],'one_menu'=>$data['one_menu'],'two_menu'=>$data['two_menu'],'navigation'=>$data['navigation'],'navigation_url'=>$data['navigation_url'],'db_config'=>$db));
+		$view->setTerminal(true);
+        return $view;
+    }
+	public function loginAction() {
+		$request = $this->getRequest();
+        $response = $this->getResponse();
+		$view = new ViewModel();
+		$view->setTerminal(true);
+        if ($request->isPost())
+		{
+			$message = new Message();
+            $post_data = $request->getPost();
+			$session = new Container('captcha');
+			$authcode = $post_data['authcode'];
+			$s_authcode = $session->offsetGet('authcode');
+			if($s_authcode != md5($authcode))
+			{
+				$message->addError("验证码错误！",'index','login');
+				$view->message = $message;
+			}
+
+			return $this->redirect()->toRoute('admin');
+		}
+		//$session->offsetExists('email')
+		//$session->offsetGet('email');
+		//$session->offsetSet('email',$email);
+		
+		
+        return $view;
+    }
+	
+	
+    public function getAdminNavigationsTable() {
+        if (!$this->_adminNavigationsTable) {
+            $sm = $this->getServiceLocator();
+            $this->_adminNavigationsTable = $sm->get('Admin\Model\AdminNavigationsTable');
+        }
+        return $this->_adminNavigationsTable;
+    }
+
+	public function captchaAction(){
+		$captcha = new Captcha();
+		$captcha->authcode();
+		exit;
+	}
+
+}
