@@ -1,0 +1,193 @@
+<?php
+/**
+ * This source file is part of GotCms.
+ *
+ * GotCms is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GotCms is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with GotCms. If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
+ *
+ * PHP Version >=5.3
+ *
+ * @category    Gc
+ * @package     Application
+ * @subpackage  Design
+ * @author      Pierre Rambaud (GoT) <pierre.rambaud86@gmail.com>
+ * @license     GNU/LGPL http://www.gnu.org/licenses/lgpl-3.0.html
+ * @link        http://www.got-cms.com
+ */
+ /** @var $this \Zend\View\Renderer\PhpRenderer */
+
+?>
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="">
+    <title><?php echo $this->escapeHtml($this->translate('Admin panel')); ?> - SoonCms</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+    <?php echo $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8'); ?>
+
+  <!-- Le styles -->
+	<?php
+	echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/images/favicon.ico'))
+			->prependStylesheet($this->basePath() . '/backend/css/dialog.css')
+			->prependStylesheet($this->basePath() . '/backend/css/system.css')
+			->prependStylesheet($this->basePath() . '/backend/css/reset.css')
+			//->prependStylesheet($this->basePath() . '/backend/css/gotcms.min.css')
+	?>
+
+	<!-- Scripts -->
+	<?php
+	echo $this->headScript()->prependFile($this->basePath() . '/backend/js/jquery.sGallery.js')
+			->prependFile($this->basePath() . '/backend/js/hotkeys.js')
+			->prependFile($this->basePath() . '/backend/js/dialog.js')
+			->prependFile($this->basePath() . '/backend/js/styleswitch.js')
+			->prependFile($this->basePath() . '/backend/js/jquery.min.js')
+			->prependFile($this->basePath() . '/backend/js/xajax.inc.js')
+			->prependFile($this->basePath() . '/backend/js/gotcms.min.js')
+	?>
+<!--[if IE 6]>
+<script src="./backend/js/png.js"></script>
+<script>
+  DD_belatedPNG.fix('.png,.header_bg,.header .logo, .left_menu h3 span,.shortcut_menu,.header .nav li a,.header .nav li,.admin_cz_bj,.admin_bg');
+</script>
+<![endif]-->
+<script type="text/javascript">
+var pc_hash = 'l9Yqpa'
+function logout(){
+	if (confirm("您确定要退出控制面板吗？"))
+	top.location = 'admin/index/logout';
+	return false;
+}
+</script>
+	<?php echo $this->headScript(); ?>
+    <?php echo $this->HeadLink(); ?>
+    <?php $module = empty($this->routeParams['module']) ? null : strtolower($this->routeParams['module']); ?>
+    <?php $navigationData = $this->navigationData;?>
+</head>
+<body>
+
+<div class="header" style="width:auto;">
+  <?php echo $this->partial('header.phtml', array('active' => $module,'navigationData'=>$navigationData)); ?>
+</div>
+<div id="content" style="width:auto; ">
+  <div class="col-left left_menu">
+    <div id="leftMain"> </div>
+    <a href="javascript:;" id="openClose" style="outline-style: none; outline-color: invert; outline-width: medium; height: 539px; " hidefocus="hidefocus" class="open" title="展开与关闭"><span class="hidden">展开</span></a> </div>
+  <div class="col-1 lf cat-menu" id="display_center_id" style="display:none" height="100%">
+    <div class="content"> </div>
+  </div>
+  <div class="col-auto">
+    <div class="crumbs-admin-top">
+      <div class="crumbs">
+        <div class="admin_top_shortcut ">
+        您好！<font color="#0066FF">admin</font> 超级管理员 &nbsp;&nbsp; </div>
+        当前位置：<span id="current_pos">管理首页</span> </div>
+    </div>
+    <div class="">
+      <div class="" style="position:relative; overflow:hidden">
+        <iframe name="right" id="rightMain" src="/admin" frameborder="false" scrolling="auto" style="border:none;" width="100%" height="470" allowtransparency="true"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="tab-web-panel hidden" style="position: absolute; z-index: 999; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); left: 680px; top: 82px; display: none; background-position: initial initial; background-repeat: initial initial; ">
+  <li style="margin:0"><a href="javascript:site_select(1, '默认站点', '#', '1')">默认站点</a></li>
+</ul>
+<?php echo $this->partial('left.phtml', array('active' => $module,'navigationData'=>$navigationData)); ?>
+<script type="text/javascript"> 
+//左侧菜单
+//clientHeight-0; 空白值 iframe自适应高度
+$('#DIV_M1000').clone().appendTo('#leftMain');
+function windowW(){
+	if($(window).width()<980){
+			$('.header').css('width',980+'px');
+			$('#content').css('width',980+'px');
+			$('body').attr('scroll','');
+			$('body').css('overflow','');
+	}
+}
+windowW();
+$(window).resize(function(){
+	if($(window).width()<980){
+		windowW();
+	}else{
+		$('.header').css('width','auto');
+		$('#content').css('width','auto');
+		$('body').attr('scroll','no');
+		$('body').css('overflow','hidden');
+	}
+});
+window.onresize = function(){
+	var heights = document.documentElement.clientHeight-150;document.getElementById('rightMain').height = heights+30;
+	var openClose = $("#rightMain").height()+39;
+	$('#center_frame').height(openClose+9);
+	$("#openClose").height(openClose+30);	
+}
+window.onresize();
+//左侧开关
+$("#openClose").click(function(){
+	if($(this).data('clicknum')==1) {
+		$("html").removeClass("on");
+		$(".left_menu").removeClass("left_menu_on");
+		$(this).removeClass("close");
+		$(this).data('clicknum', 0);
+	} else {
+		$(".left_menu").addClass("left_menu_on");
+		$(this).addClass("close");
+		$("html").addClass("on");
+		$(this).data('clicknum', 1);
+	}
+	return false;
+});
+function _M(menuid,targetUrl) {
+	$('.top_menu').removeClass("on");
+	$('#_M'+menuid).addClass("on");
+	$("#menuid").val(menuid);
+	$("#bigid").val(menuid);
+	var menu="#DIV_M"+menuid;
+	$('#leftMain').html("");
+	$(menu).clone().appendTo($("#leftMain"));
+	
+	//显示左侧菜单，当点击顶部时，展开左侧
+	$(".left_menu").removeClass("left_menu_on");
+	$("#openClose").removeClass("close");
+	//$("html").removeClass("on");
+	$("#openClose").data('clicknum', 0);
+	$("#current_pos").data('clicknum', 1);
+	$("#rightMain").attr('src', targetUrl);
+}
+function _MP(menuid,targetUrl) {
+	$("#menuid").val(menuid);
+	$("#paneladd").html('<a class="panel-add" href="javascript:add_panel();"><em>添加</em></a>');
+	$("#rightMain").attr('src', targetUrl);
+	$('.sub_menu').removeClass("on fb blue");
+	$('#_MP'+menuid).addClass("on fb blue");
+	/*$.get(function(data){
+		$("#current_pos").html(data+'<span id="current_pos_attr"></span>');
+	});*/
+	$("#current_pos").data('clicknum', 1);
+}
+
+function for_menu(id){ 
+	$("#keyid_"+id).slideToggle();
+	$("#span_"+id).toggleClass("on"); return false;
+}
+</script>
+</body>
+</html>
